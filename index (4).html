@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSecHub - OSINT Framework</title>
+    <style>
+        :root {
+            --primary: #0d1117;
+            --secondary: #161b22;
+            --accent: #58a6ff;
+            --text: #c9d1d9;
+            --success: #238636;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+        }
+        
+        /* Login Page Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0d1117 0%, #1a1f29 100%);
+        }
+        
+        .login-box {
+            background-color: var(--secondary);
+            padding: 2rem 3rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 400px;
+            text-align: center;
+            border: 1px solid #30363d;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-box h1 {
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-size: 2rem;
+            background: linear-gradient(90deg, #58a6ff, #8a63ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .login-box .logo {
+            width: 80px;
+            margin-bottom: 1rem;
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background-color: #0d1117;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover {
+            background-color: #2ea043;
+        }
+        
+        .error-message {
+            color: #f85149;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Main Dashboard Styles */
+        .dashboard {
+            display: none;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: var(--accent);
+            font-size: 1.8rem;
+        }
+        
+        .logout-btn {
+            background-color: #f85149;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .logout-btn:hover {
+            background-color: #da3633;
+        }
+        
+        /* Animation Screen */
+        .animation-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .animation-text {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #ff8a00, #e52e71, #58a6ff, #8a63ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: colorChange 5s infinite;
+        }
+        
+        @keyframes colorChange {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .cyber-loader {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+        
+        .cyber-loader div {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid transparent;
+            border-radius: 50%;
+            animation: rotate 2s linear infinite;
+            border-top-color: #58a6ff;
+        }
+        
+        .cyber-loader div:nth-child(2) {
+            animation-delay: 0.5s;
+            border-top-color: #e52e71;
+        }
+        
+        .cyber-loader div:nth-child(3) {
+            animation-delay: 1s;
+            border-top-color: #ff8a00;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* OSINT Framework Styles */
+        .osint-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .osint-category {
+            background-color: var(--secondary);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #30363d;
+        }
+        
+        .osint-category h2 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 10px;
+        }
+        
+        .osint-tool {
+            margin-bottom: 10px;
+        }
+        
+        .osint-tool a {
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            padding: 8px 10px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .osint-tool a:hover {
+            background-color: rgba(88, 166, 255, 0.1);
+            color: var(--accent);
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background-color: var(--secondary);
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="login-box">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+            <h1>CyberSecHub</h1>
+            <input type="password" class="login-input" id="passwordInput" placeholder="Enter Access Code" autocomplete="off">
+            <button class="login-btn" id="loginBtn">Enter Hub</button>
+            <div class="error-message" id="errorMessage">Invalid access code. Try again.</div>
+        </div>
+    </div>
+    
+    <!-- Animation Screen -->
+    <div class="animation-screen" id="animationScreen">
+        <div class="animation-text">Welcome to CyberSecHub</div>
+        <div class="cyber-loader">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <h1>CyberSecHub OSINT Framework</h1>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        
+        <input type="text" class="search-box" id="searchBox" placeholder="Search OSINT tools...">
+        
+        <div class="osint-container" id="osintContainer">
+            <!-- Username -->
+            <div class="osint-category">
+                <h2>Username</h2>
+                <div class="osint-tool"><a href="https://whatsmyname.app/" target="_blank">WhatsMyName</a></div>
+                <div class="osint-tool"><a href="https://namechk.com/" target="_blank">Namechk</a></div>
+                <div class="osint-tool"><a href="https://checkusernames.com/" target="_blank">CheckUsernames</a></div>
+                <div class="osint-tool"><a href="https://knowem.com/" target="_blank">KnowEm</a></div>
+                <div class="osint-tool"><a href="https://usersearch.org/" target="_blank">UserSearch</a></div>
+            </div>
+            
+            <!-- Email Address -->
+            <div class="osint-category">
+                <h2>Email Address</h2>
+                <div class="osint-tool"><a href="https://hunter.io/" target="_blank">Hunter.io</a></div>
+                <div class="osint-tool"><a href="https://tools.epieos.com/email.php" target="_blank">Epieos Email Search</a></div>
+                <div class="osint-tool"><a href="https://www.thatsthem.com/email-search" target="_blank">ThatsThem</a></div>
+                <div class="osint-tool"><a href="https://www.melissa.com/lookups/emaillookup.asp" target="_blank">Melissa Lookups</a></div>
+                <div class="osint-tool"><a href="https://verify-email.org/" target="_blank">Verify Email</a></div>
+            </div>
+            
+            <!-- Phone Numbers -->
+            <div class="osint-category">
+                <h2>Phone Numbers</h2>
+                <div class="osint-tool"><a href="https://www.truecaller.com/" target="_blank">Truecaller</a></div>
+                <div class="osint-tool"><a href="https://sync.me/" target="_blank">Sync.me</a></div>
+                <div class="osint-tool"><a href="https://www.whitepages.com/" target="_blank">Whitepages</a></div>
+                <div class="osint-tool"><a href="https://www.numlookup.com/" target="_blank">NumLookup</a></div>
+                <div class="osint-tool"><a href="https://thatsthem.com/phone-search" target="_blank">ThatsThem Phone</a></div>
+            </div>
+            
+            <!-- Domain/IP -->
+            <div class="osint-category">
+                <h2>Domain/IP</h2>
+                <div class="osint-tool"><a href="https://whois.domaintools.com/" target="_blank">Whois Lookup</a></div>
+                <div class="osint-tool"><a href="https://dnsdumpster.com/" target="_blank">DNSDumpster</a></div>
+                <div class="osint-tool"><a href="https://www.shodan.io/" target="_blank">Shodan</a></div>
+                <div class="osint-tool"><a href="https://www.virustotal.com/" target="_blank">VirusTotal</a></div>
+                <div class="osint-tool"><a href="https://www.robtex.com/" target="_blank">Robtex</a></div>
+            </div>
+            
+            <!-- Social Media -->
+            <div class="osint-category">
+                <h2>Social Media</h2>
+                <div class="osint-tool"><a href="https://www.social-searcher.com/" target="_blank">Social Searcher</a></div>
+                <div class="osint-tool"><a href="https://www.snoopreport.com/" target="_blank">SnoopReport</a></div>
+                <div class="osint-tool"><a href="https://socialblade.com/" target="_blank">Social Blade</a></div>
+                <div class="osint-tool"><a href="https://www.osintcombine.com/twitter-intelligence" target="_blank">Twitter Intelligence</a></div>
+                <div class="osint-tool"><a href="https://www.instagram.com/" target="_blank">Instagram Search</a></div>
+            </div>
+            
+            <!-- Images -->
+            <div class="osint-category">
+                <h2>Images</h2>
+                <div class="osint-tool"><a href="https://images.google.com/" target="_blank">Google Images</a></div>
+                <div class="osint-tool"><a href="https://tineye.com/" target="_blank">TinEye</a></div>
+                <div class="osint-tool"><a href="https://www.bing.com/visualsearch" target="_blank">Bing Visual Search</a></div>
+                <div class="osint-tool"><a href="https://yandex.com/images/" target="_blank">Yandex Images</a></div>
+                <div class="osint-tool"><a href="https://www.imageidentify.com/" target="_blank">ImageIdentify</a></div>
+            </div>
+            
+            <!-- Documents -->
+            <div class="osint-category">
+                <h2>Documents</h2>
+                <div class="osint-tool"><a href="https://www.google.com/advanced_search" target="_blank">Google Advanced Search</a></div>
+                <div class="osint-tool"><a href="https://www.faganfinder.com/" target="_blank">FaganFinder</a></div>
+                <div class="osint-tool"><a href="https://www.searchftps.net/" target="_blank">SearchFTPS</a></div>
+                <div class="osint-tool"><a href="https://www.docjax.com/" target="_blank">DocJax</a></div>
+                <div class="osint-tool"><a href="https://www.slideshare.net/" target="_blank">SlideShare</a></div>
+            </div>
+            
+            <!-- Dark Web -->
+            <div class="osint-category">
+                <h2>Dark Web</h2>
+                <div class="osint-tool"><a href="https://www.onion.city/" target="_blank">Onion City</a></div>
+                <div class="osint-tool"><a href="https://ahmia.fi/" target="_blank">Ahmia</a></div>
+                <div class="osint-tool"><a href="https://www.deepweb-sites.com/" target="_blank">DeepWeb Sites</a></div>
+                <div class="osint-tool"><a href="https://darkwebnews.com/" target="_blank">Dark Web News</a></div>
+                <div class="osint-tool"><a href="https://www.torproject.org/" target="_blank">Tor Project</a></div>
+            </div>
+            
+            <!-- People Search -->
+            <div class="osint-category">
+                <h2>People Search</h2>
+                <div class="osint-tool"><a href="https://www.spokeo.com/" target="_blank">Spokeo</a></div>
+                <div class="osint-tool"><a href="https://www.peekyou.com/" target="_blank">PeekYou</a></div>
+                <div class="osint-tool"><a href="https://www.familytreenow.com/" target="_blank">FamilyTreeNow</a></div>
+                <div class="osint-tool"><a href="https://www.intelius.com/" target="_blank">Intelius</a></div>
+                <div class="osint-tool"><a href="https://www.truepeoplesearch.com/" target="_blank">TruePeopleSearch</a></div>
+            </div>
+            
+            <!-- Business Records -->
+            <div class="osint-category">
+                <h2>Business Records</h2>
+                <div class="osint-tool"><a href="https://www.sec.gov/edgar/searchedgar/companysearch.html" target="_blank">EDGAR Company Search</a></div>
+                <div class="osint-tool"><a href="https://www.opencorporates.com/" target="_blank">OpenCorporates</a></div>
+                <div class="osint-tool"><a href="https://www.zoominfo.com/" target="_blank">ZoomInfo</a></div>
+                <div class="osint-tool"><a href="https://www.dnb.com/" target="_blank">Dun & Bradstreet</a></div>
+                <div class="osint-tool"><a href="https://www.bloomberg.com/research/stocks/private/snapshot.asp" target="_blank">Bloomberg Business</a></div>
+            </div>
+            
+            <!-- Geolocation -->
+            <div class="osint-category">
+                <h2>Geolocation</h2>
+                <div class="osint-tool"><a href="https://www.google.com/maps" target="_blank">Google Maps</a></div>
+                <div class="osint-tool"><a href="https://www.bing.com/maps" target="_blank">Bing Maps</a></div>
+                <div class="osint-tool"><a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a></div>
+                <div class="osint-tool"><a href="https://www.what3words.com/" target="_blank">what3words</a></div>
+                <div class="osint-tool"><a href="https://www.flightradar24.com/" target="_blank">Flightradar24</a></div>
+            </div>
+            
+            <!-- Archives -->
+            <div class="osint-category">
+                <h2>Archives</h2>
+                <div class="osint-tool"><a href="https://archive.org/" target="_blank">Wayback Machine</a></div>
+                <div class="osint-tool"><a href="https://archive.is/" target="_blank">Archive.today</a></div>
+                <div class="osint-tool"><a href="https://www.archiveteam.org/" target="_blank">Archive Team</a></div>
+                <div class="osint-tool"><a href="https://oldweb.today/" target="_blank">OldWeb.today</a></div>
+                <div class="osint-tool"><a href="https://www.loc.gov/websites/" target="_blank">Library of Congress</a></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('passwordInput');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const loginPage = document.getElementById('loginPage');
+            const animationScreen = document.getElementById('animationScreen');
+            const dashboard = document.getElementById('dashboard');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const searchBox = document.getElementById('searchBox');
+            const osintContainer = document.getElementById('osintContainer');
+            
+            // Handle login
+            loginBtn.addEventListener('click', handleLogin);
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+            
+            function handleLogin() {
+                const password = passwordInput.value.trim();
+                
+                if (password === 'batpool123') {
+                    // Show animation screen
+                    loginPage.style.display = 'none';
+                    animationScreen.style.display = 'flex';
+                    
+                    // After 3 seconds, show dashboard
+                    setTimeout(function() {
+                        animationScreen.style.display = 'none';
+                        dashboard.style.display = 'block';
+                    }, 3000);
+                } else {
+                    errorMessage.style.display = 'block';
+                    passwordInput.focus();
+                }
+            }
+            
+            // Handle logout
+            logoutBtn.addEventListener('click', function() {
+                dashboard.style.display = 'none';
+                loginPage.style.display = 'flex';
+                passwordInput.value = '';
+                errorMessage.style.display = 'none';
+            });
+            
+            // Search functionality
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const categories = osintContainer.querySelectorAll('.osint-category');
+                
+                categories.forEach(category => {
+                    const tools = category.querySelectorAll('.osint-tool');
+                    let hasVisibleTools = false;
+                    
+                    tools.forEach(tool => {
+                        const toolText = tool.textContent.toLowerCase();
+                        if (toolText.includes(searchTerm)) {
+                            tool.style.display = 'block';
+                            hasVisibleTools = true;
+                        } else {
+                            tool.style.display = 'none';
+                        }
+                    });
+                    
+                    // Show/hide category based on visible tools
+                    category.style.display = hasVisibleTools ? 'block' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
